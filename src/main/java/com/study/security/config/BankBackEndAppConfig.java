@@ -18,6 +18,27 @@ public class BankBackEndAppConfig {
                 .and().httpBasic()
                 .and().formLogin();
 
+        /**
+         * Achieving denyAll
+         */
+
+        /*
+        http.authorizeHttpRequests()
+                .anyRequest().denyAll()
+                .and().httpBasic()
+                .and().formLogin(); */
+
+        /**
+         * Achieving permitAll
+         */
+
+        /*
+        http.authorizeHttpRequests()
+                .anyRequest().permitAll()
+                .and().httpBasic()
+                .and().formLogin();
+        */
+
         return http.build();
     }
 }
