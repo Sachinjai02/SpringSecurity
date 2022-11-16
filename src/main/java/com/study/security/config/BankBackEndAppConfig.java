@@ -12,6 +12,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -19,15 +20,18 @@ public class BankBackEndAppConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.securityContext().requireExplicitSave(false).and()
+        http
+                .securityContext().requireExplicitSave(false).
+                and()
                 .csrf()
+                //.disable()
                 .ignoringRequestMatchers("/contact", "/register")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().cors().configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration corsConfig = new CorsConfiguration();
-                        corsConfig.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                        corsConfig.setAllowedOrigins(Arrays.stream(new String[]{"http://sachinsach.abc:4200","http://localhost:4200"}).toList());
                         corsConfig.setAllowCredentials(true);
                         corsConfig.setAllowedMethods(Collections.singletonList("*"));
                         corsConfig.setAllowedHeaders(Collections.singletonList("*"));
