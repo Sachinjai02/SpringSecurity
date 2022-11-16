@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DemoBankAuthenticationProvider implements AuthenticationProvider {
@@ -36,7 +37,8 @@ public class DemoBankAuthenticationProvider implements AuthenticationProvider {
         Customer customer = customers.get(0);
         if(passwordEncoder.matches(pwd, customer.getPwd())) {
             List<GrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority(customer.getRole()));
+            authorities.addAll(customer.getAuthorities().stream().
+                    map(s -> new SimpleGrantedAuthority(s.getName())).collect(Collectors.toList()));
             return new UsernamePasswordAuthenticationToken(userName, pwd, authorities);
         } else {
             throw new BadCredentialsException("Invalid credentials");

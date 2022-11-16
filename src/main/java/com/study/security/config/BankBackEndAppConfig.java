@@ -40,7 +40,12 @@ public class BankBackEndAppConfig {
                     }
                 })
                 .and().authorizeHttpRequests()
-                .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards","/user").authenticated()
+                .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
+                .requestMatchers("/myBalance").hasAnyAuthority("VIEWACCOUNT","VIEWBALANCE")
+                .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
+                .requestMatchers("/myLoans").hasAuthority("VIEWLOANS")
+                .requestMatchers("/user")
+                .authenticated()
                 .requestMatchers("/notices", "/contact", "/register").permitAll()
                 .and().httpBasic()
                 .and().formLogin();
