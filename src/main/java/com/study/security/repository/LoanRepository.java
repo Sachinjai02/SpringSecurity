@@ -1,15 +1,14 @@
 package com.study.security.repository;
 
-
-import com.study.security.model.Customer;
+import com.study.security.model.Loans;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface CustomerRepository extends CrudRepository<Customer, Long> {
+public interface LoanRepository extends CrudRepository<Loans, Long> {
+	
+	List<Loans> findByCustomerIdOrderByStartDtDesc(int customerId);
 
-    List<Customer> findByEmail(String email);
-    
 }

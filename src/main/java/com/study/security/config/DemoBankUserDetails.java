@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DemoBankUserDetails implements UserDetailsService {
@@ -30,5 +31,8 @@ public class DemoBankUserDetails implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(customer.getRole()));
             return new User(customer.getEmail(), customer.getPwd(), authorities);
         }
+
+
+
     }
 }

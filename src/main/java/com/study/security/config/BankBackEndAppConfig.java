@@ -1,22 +1,42 @@
 package com.study.security.config;
 
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
 
 @Configuration
 public class BankBackEndAppConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable().
-                authorizeHttpRequests()
-                .requestMatchers("/myAccounts", "/myBalances", "/myLoans", "/myCards").authenticated()
+        http.securityContext().requireExplicitSave(false).and()
+                .csrf()
+                .ignoringRequestMatchers("/contact", "/register")
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().cors().configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration corsConfig = new CorsConfiguration();
+                        corsConfig.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                        corsConfig.setAllowCredentials(true);
+                        corsConfig.setAllowedMethods(Collections.singletonList("*"));
+                        corsConfig.setAllowedHeaders(Collections.singletonList("*"));
+                        corsConfig.setMaxAge(3600l);
+                        return corsConfig;
+                    }
+                })
+                .and().authorizeHttpRequests()
+                .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards","/user").authenticated()
                 .requestMatchers("/notices", "/contact", "/register").permitAll()
                 .and().httpBasic()
                 .and().formLogin();
@@ -86,7 +106,7 @@ public class BankBackEndAppConfig {
     }*/
 
     @Bean
-    public PasswordEncoder noOpPasswordEncoder() {
+    public PasswordEncoder l() {
         return new BCryptPasswordEncoder();
     }
 }
