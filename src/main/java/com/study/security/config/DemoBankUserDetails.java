@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/* //This class is not really needed since we are using custom Authentication provider
 @Service
 public class DemoBankUserDetails implements UserDetailsService {
     @Autowired
@@ -36,3 +37,4 @@ public class DemoBankUserDetails implements UserDetailsService {
 
     }
 }
+*/

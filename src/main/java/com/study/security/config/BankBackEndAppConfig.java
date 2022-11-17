@@ -56,9 +56,8 @@ public class BankBackEndAppConfig {
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasAnyRole("ADMIN","USER")
                 .requestMatchers("/myCards").hasRole("ADMIN")
-                .requestMatchers("/myLoans").hasRole("USER")
-                .requestMatchers("/user")
-                .authenticated()
+                .requestMatchers("/myLoans").authenticated()
+                .requestMatchers("/user").authenticated()
                 .requestMatchers("/notices", "/contact", "/register").permitAll()
                 .and().httpBasic()
                 .and().formLogin();
