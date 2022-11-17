@@ -1,6 +1,9 @@
 package com.study.security.config;
 
 
+import com.study.security.filter.AuthenticationLoggingAtFilter;
+import com.study.security.filter.LogAuthoritiesAfterFilter;
+import com.study.security.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -24,10 +27,11 @@ public class BankBackEndAppConfig {
                 .securityContext().requireExplicitSave(false).
                 and()
                 .csrf()
-                //.disable()
-                .ignoringRequestMatchers("/contact", "/register")
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and().cors().configurationSource(new CorsConfigurationSource() {
+                .disable()
+                //.ignoringRequestMatchers("/contact", "/register")
+                //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                //.and()
+                .cors().configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration corsConfig = new CorsConfiguration();
@@ -39,7 +43,10 @@ public class BankBackEndAppConfig {
                         return corsConfig;
                     }
                 })
-                .and().authorizeHttpRequests()
+                .and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAt(new AuthenticationLoggingAtFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new LogAuthoritiesAfterFilter(), BasicAuthenticationFilter.class)
+                .authorizeHttpRequests()
                 /*.requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
                 .requestMatchers("/myBalance").hasAnyAuthority("VIEWACCOUNT","VIEWBALANCE")
                 .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
