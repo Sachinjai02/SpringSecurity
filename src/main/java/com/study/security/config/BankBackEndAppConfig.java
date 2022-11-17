@@ -1,13 +1,12 @@
 package com.study.security.config;
 
 
-import com.study.security.filter.AuthenticationLoggingAtFilter;
-import com.study.security.filter.LogAuthoritiesAfterFilter;
-import com.study.security.filter.RequestValidationBeforeFilter;
+import com.study.security.filter.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,8 +22,8 @@ public class BankBackEndAppConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityContext().requireExplicitSave(false).
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().securityContext().requireExplicitSave(false).
                 and()
                 .csrf()
                 .disable()
@@ -39,6 +38,7 @@ public class BankBackEndAppConfig {
                         corsConfig.setAllowCredentials(true);
                         corsConfig.setAllowedMethods(Collections.singletonList("*"));
                         corsConfig.setAllowedHeaders(Collections.singletonList("*"));
+                        corsConfig.setExposedHeaders(Arrays.asList("Authorization"));
                         corsConfig.setMaxAge(3600l);
                         return corsConfig;
                     }
@@ -46,6 +46,8 @@ public class BankBackEndAppConfig {
                 .and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .addFilterAt(new AuthenticationLoggingAtFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new LogAuthoritiesAfterFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests()
                 /*.requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
                 .requestMatchers("/myBalance").hasAnyAuthority("VIEWACCOUNT","VIEWBALANCE")
